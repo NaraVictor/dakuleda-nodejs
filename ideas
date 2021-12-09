@@ -1,0 +1,70 @@
+- provide input boxes for customer details in pos. when information is entered n posted, store
+  customer information in customer's table checking to be sure that same name n contact doesnt exit
+
+-
+
+user, sales
+
+areas hanging --->
+
+- purchase order especially updating controller
+- custom controllers
+
+transactions
+
+- sales, purchase orders n others
+
+// transaction
+const result = sequelize.transaction(async (t) => {
+console.log("just entered the transaction -> ", t);
+let purchaseOrder = await PurchaseOrder.create(
+{
+sumAmt,
+sumQty,
+productCount,
+userId: req.user.id,
+comment,
+},
+{ transaction: t }
+);
+
+    			// inserting into the purchase order detail table
+    			req.body.selected.map(async (prod) => {
+    				await PurchaseOrderDetail.create(
+    					{
+    						purchaseOrderId: purchaseOrder.id,
+    						productId: prod.id,
+    						availableQty: prod.quantity,
+    						restockQty: prod.restockQty,
+    						unitPrice: prod.purchasePrice,
+    					},
+    					{ transaction: t }
+    				);
+    			});
+
+    			// update products quantities
+    			req.body.selected.map(async (prod) => {
+    				const p = await Product.findOne(
+    					{
+    						where: { id: prod.id },
+    					},
+    					{ transaction: t }
+    				);
+
+    				// strictly ensure that max quantity cannot be exceeded
+    				if (
+    					parseInt(p.quantity) + parseInt(prod.restockQty) >
+    					parseInt(p.maxQty)
+    				) {
+    					throw {
+    						code: status.BAD_REQUEST,
+    						message: "Product maximum quantity will be exceeded",
+    					};
+    				}
+
+    				p.quantity = parseInt(p.quantity) + parseInt(prod.restockQty);
+    				await p.save();
+    			});
+
+    			return purchaseOrder;
+    		});

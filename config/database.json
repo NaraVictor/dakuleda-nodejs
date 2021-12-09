@@ -1,0 +1,16 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "admin",
+    "database": "dakuleda_app",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "admin",
+    "database": "dakuleda_app",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}
