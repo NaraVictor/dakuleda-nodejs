@@ -98,14 +98,8 @@ module.exports = (sequelize, DataTypes) => {
 			SKU: {
 				type: DataTypes.STRING,
 			},
-			imageUrl: {
-				// primary product image
-				type: DataTypes.STRING,
-			},
-			videoUrl: {
-				type: DataTypes.STRING,
-			},
-			deleted: {
+
+			isDeleted: {
 				type: DataTypes.BOOLEAN,
 				defaultValue: false,
 			},
@@ -136,6 +130,21 @@ module.exports = (sequelize, DataTypes) => {
 			orderCount: {
 				type: DataTypes.INTEGER,
 				defaultValue: 0,
+			},
+			imageUrl: {
+				// primary product image
+				type: DataTypes.STRING,
+			},
+			imageFileName: {
+				// primary product image
+				type: DataTypes.STRING,
+			},
+			videoUrl: {
+				type: DataTypes.STRING,
+			},
+			videoFileName: {
+				// primary product image
+				type: DataTypes.STRING,
 			},
 
 			//// REASON: there is no inventory to manage here

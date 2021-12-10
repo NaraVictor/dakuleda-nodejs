@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
 			accepted: {
 				type: DataTypes.BOOLEAN,
 			},
+			isDeleted: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
+			},
 		},
 		{
 			sequelize,

@@ -18,9 +18,9 @@ module.exports = (sequelize, DataTypes) => {
 			url: {
 				type: DataTypes.STRING,
 			},
-			isActive: {
+			isDeleted: {
 				type: DataTypes.BOOLEAN,
-				defaultValue: true,
+				defaultValue: false,
 			},
 			hasButton: {
 				type: DataTypes.BOOLEAN,

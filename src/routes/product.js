@@ -21,6 +21,11 @@ router.get("/api/products/:productId/tags", product.getTags);
 router.put("/api/products", product.updateProduct); // update
 router.post("/api/products", authenticateToken, product.newProduct);
 router.post(
+	"/api/products/:productId/upload-picture",
+	authenticateToken,
+	product.uploadPicture
+);
+router.post(
 	"/api/products/:productId/features",
 	authenticateToken,
 	product.newFeature

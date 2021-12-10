@@ -18,7 +18,7 @@ module.exports = {
 					email: req.body.email,
 				},
 			});
-			if (!user || !user.isActive)
+			if (!user || !user.isDeleted)
 				return res
 					.status(status.BAD_REQUEST)
 					.send("invalid username or password");
@@ -202,7 +202,7 @@ module.exports = {
 	},
 	async getUsers(req, res) {
 		let data = await User.findAll({
-			attributes: ["id", "username", "fullName", "role", "email", "isActive"],
+			attributes: ["id", "username", "fullName", "role", "email", "isDeleted"],
 		});
 
 		res.json({ status: true, message: "Returning users", data });
@@ -247,7 +247,8 @@ module.exports = {
 		const user = await User.findOne({
 			where: { id },
 		});
-		user.isActive = !user.isActive;
+
+		user.isDeleted = !user.isDeleted;
 		await user.save();
 
 		res.json({ status: true, message: "User status updated" });

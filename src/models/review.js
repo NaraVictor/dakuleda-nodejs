@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
 			comment: {
 				type: DataTypes.STRING,
 			},
+			isDeleted: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
+			},
 		},
 		{
 			sequelize,

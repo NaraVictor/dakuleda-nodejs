@@ -1,5 +1,7 @@
 const status = require("http-status");
 const _ = require("lodash");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 const { Category, Product } = require("../models");
 
@@ -16,7 +18,7 @@ module.exports = {
 				};
 
 			const data = await Category.findOne({
-				where: { slug: req.params.slug },
+				where: { slug: req.params.slug, isDeleted: false },
 				include: [
 					{
 						model: Product,
@@ -33,7 +35,7 @@ module.exports = {
 							"regularPrice",
 							"newPrice",
 						],
-						where: { deleted: true },
+						where: { isDeleted: false },
 					},
 				],
 			});
@@ -46,7 +48,7 @@ module.exports = {
 	},
 	async getCategories(req, res) {
 		try {
-			const data = await Category.findAll();
+			const data = await Category.findAll({ where: { isDeleted: false } });
 			res.json({ status: true, message: "Returning categories", data });
 		} catch (ex) {
 			console.log(ex);
@@ -73,18 +75,50 @@ module.exports = {
 					message: "category with the same slug exists",
 				});
 
-			// upload image
 			const data = await Category.create({
 				name: req.body.name,
-				imageUrl: req.body.imageUrl,
 				description: req.body.description,
-				slug: req.body.slug,
+				// slug: req.body.slug, //auto generated
 			});
 
 			res.json({ status: true, message: "Category Added", data });
 		} catch (ex) {
 			console.log(ex);
 			res.status(status.INTERNAL_SERVER_ERROR).send({ msg: "error" });
+		}
+	},
+
+	async uploadPicture(req, res) {
+		try {
+			const category = await Category.findOne({
+				where: { id: req.params.id },
+			});
+
+			if (!category)
+				return res.status(status.NOT_FOUND).send({ msg: "category not found" });
+
+			// upload file
+			file = req.files.categoryImage;
+			const newName = uuidv4() + path.extname(file.name);
+			uploadPath = path.join(__dirname, "../../public/uploads/images", newName);
+			file.mv(uploadPath, function (err) {
+				if (err) return res.status(500).send(err);
+			});
+
+			// update category information
+			category.imageUrl = uploadPath;
+			category.imageFileName = newName;
+			// category.originalFileName = file.name;
+			category.save();
+
+			return res.json({
+				status: true,
+				message: "category picture uploaded",
+				data: category,
+			});
+		} catch (ex) {
+			console.log("error -> ", ex);
+			return res.status(500).send({ msg: "error" });
 		}
 	},
 	async updateCategory(req, res) {
@@ -100,7 +134,6 @@ module.exports = {
 			const data = await Category.update(
 				{
 					name: req.body.name,
-					imageUrl: req.body.imageUrl,
 					description: req.body.description,
 					slug: generateSlug(req.body.name),
 				},
@@ -125,7 +158,8 @@ module.exports = {
 			const category = await Category.findOne({
 				where: { id },
 			});
-			await category.destroy();
+			category.isDeleted = !category.isDeleted;
+			await category.save();
 
 			res.json({ status: true, message: "Category deleted" });
 		} catch (ex) {

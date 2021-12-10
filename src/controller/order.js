@@ -102,7 +102,7 @@ module.exports = {
 					include: [
 						{
 							model: Coupon,
-							attributes: ["title", "isActive", "amount"],
+							attributes: ["title", "isDeleted", "amount"],
 							as: "couponParent",
 						},
 					],
@@ -118,7 +118,7 @@ module.exports = {
 				});
 
 			// on expired coupon
-			if (!coupon.couponParent.isActive)
+			if (coupon.couponParent.isDeleted)
 				return res.status(status.BAD_REQUEST).send({
 					code: status.BAD_REQUEST,
 					source: "coupon",

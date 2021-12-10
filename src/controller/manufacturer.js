@@ -15,7 +15,9 @@ module.exports = {
 
 			if (!parseInt(id)) next();
 
-			let data = await Manufacturer.findOne({ where: { id } });
+			let data = await Manufacturer.findOne({
+				where: { id, isDeleted: false },
+			});
 
 			if (!data)
 				throw { code: status.BAD_REQUEST, message: "Manufacturer not found" };
@@ -28,7 +30,7 @@ module.exports = {
 	},
 	async getManufacturers(req, res) {
 		try {
-			let data = await Manufacturer.findAll({});
+			let data = await Manufacturer.findAll({ where: { isDeleted: false } });
 			res.json({ status: true, message: "Returning manufacturers", data });
 		} catch (ex) {
 			console.log(ex);
@@ -87,9 +89,7 @@ module.exports = {
 
 			let { id } = req.params;
 
-			await Manufacturer.findOne({
-				where: { id },
-			}).destroy();
+			await Manufacturer.update({ isDeleted: true }, { where: { id } });
 
 			res.json({ status: true, message: "Manufacturer deleted" });
 		} catch (ex) {

@@ -26,6 +26,8 @@ app.use(
 	})
 );
 
+app.use(express.static("public"));
+
 // // Configure custom logger middleware
 app.use(logger.dev, logger.combined);
 // sequelize.sync({ alter: true });

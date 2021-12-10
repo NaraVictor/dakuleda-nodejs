@@ -18,11 +18,18 @@ module.exports = (sequelize, DataTypes) => {
 			imageUrl: {
 				type: DataTypes.STRING,
 			},
+			imageFileName: {
+				type: DataTypes.STRING,
+			},
 			description: {
 				type: DataTypes.STRING,
 			},
 			slug: {
 				type: DataTypes.STRING,
+			},
+			isDeleted: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
 			},
 		},
 		{

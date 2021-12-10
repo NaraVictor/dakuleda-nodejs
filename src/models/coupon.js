@@ -24,9 +24,9 @@ module.exports = (sequelize, DataTypes) => {
 			endDate: {
 				type: DataTypes.DATEONLY,
 			},
-			isActive: {
+			isDeleted: {
 				type: DataTypes.BOOLEAN,
-				defaultValue: true,
+				defaultValue: false,
 			},
 			amount: {
 				type: DataTypes.DECIMAL,

@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
 			website: {
 				type: DataTypes.STRING,
 			},
+			isDeleted: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
+			},
 		},
 		{
 			sequelize,

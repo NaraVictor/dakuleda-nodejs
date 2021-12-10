@@ -16,7 +16,7 @@ module.exports = {
 			if (!parseInt(id)) next();
 
 			let data = await Coupon.findOne({
-				where: { id, isActive: true },
+				where: { id, isDeleted: true },
 				include: [
 					{
 						model: CouponCodes,
@@ -105,7 +105,7 @@ module.exports = {
 					description: req.body.description,
 					startDate: req.body.startDate,
 					endDate: req.body.endDate,
-					isActive: req.body.isActive,
+					isDeleted: req.body.isDeleted,
 					amount: req.body.amount,
 				},
 				{
@@ -125,9 +125,13 @@ module.exports = {
 				throw { code: status.BAD_REQUEST, message: "You must specify the id" };
 
 			let { id } = req.params;
+			const coupon = await Coupon.findOne({
+				where: { id },
+			});
+			coupon.isDeleted = !coupon.isDeleted;
+			await coupon.save();
 
-			await Coupon.update({ isActive: false }, { where: { id } });
-			return res.json({ status: true, message: "Coupon disactived" });
+			return res.json({ status: true, message: "Coupon status updated" });
 		} catch (ex) {
 			// console.log(ex);
 			res.status(status.INTERNAL_SERVER_ERROR).send({ msg: "error" });

@@ -1,5 +1,7 @@
 const status = require("http-status");
 const _ = require("lodash");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 const {
 	Product,
@@ -27,7 +29,7 @@ module.exports = {
 			// if (!parseInt(productId)) next();
 
 			let data = await Product.findOne({
-				where: { slug, deleted: false },
+				where: { slug, isDeleted: false },
 				include: [
 					{
 						model: ProductFeature,
@@ -70,13 +72,13 @@ module.exports = {
 	async getProducts(req, res) {
 		try {
 			let data = await Product.findAll({
-				where: { deleted: false },
+				where: { isDeleted: false },
 				order: [["name", "ASC"]],
 				include: [
 					{
 						model: Category,
 						as: "category",
-						attributes: ["name", "imageUrl", "slug"],
+						attributes: ["name", "imageUrl", "imageFileName", "slug"],
 					},
 					{
 						model: Manufacturer,
@@ -235,6 +237,39 @@ module.exports = {
 		}
 	},
 
+	async uploadPicture(req, res) {
+		try {
+			const product = await Product.findOne({
+				where: { id: req.params.productId },
+			});
+
+			if (!product)
+				return res.status(status.NOT_FOUND).send({ msg: "product not found" });
+
+			// upload file
+			file = req.files.productImage;
+			const newName = uuidv4() + path.extname(file.name);
+			uploadPath = path.join(__dirname, "../../public/uploads/images", newName);
+			file.mv(uploadPath, function (err) {
+				if (err) return res.status(500).send(err);
+			});
+
+			// update product information
+			product.imageUrl = uploadPath;
+			product.imageFileName = newName;
+			// product.originalFileName = file.name;
+			product.save();
+
+			return res.json({
+				status: true,
+				message: "product picture uploaded",
+				data: product,
+			});
+		} catch (ex) {
+			console.log("error -> ", ex);
+			return res.status(500).send({ msg: "error" });
+		}
+	},
 	async updateProduct(req, res) {
 		try {
 			if (!has(req.body, ["id", "name"]))
@@ -377,7 +412,7 @@ module.exports = {
 	//  =============================
 	async deleteProduct(req, res) {
 		try {
-			if (!has(req.param, "productId"))
+			if (!has(req.params, "productId"))
 				throw {
 					code: status.BAD_REQUEST,
 					message: "You must specify the product id",
@@ -385,7 +420,7 @@ module.exports = {
 
 			let { productId } = req.params;
 
-			await Product.update({ deleted: true }, { where: { id: productId } });
+			await Product.update({ isDeleted: true }, { where: { id: productId } });
 			res.json({ status: true, message: "Product deleted" });
 		} catch (ex) {
 			// console.log(ex);

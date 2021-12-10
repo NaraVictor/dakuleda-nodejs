@@ -13,7 +13,7 @@ router.post("/api/accounts/login", user.login);
 
 router.post("/api/accounts/change-password", user.changePassword);
 
-router.put("/accounts/:id/update-status", user.updateStatus);
+router.delete("/api/accounts/:id", user.updateStatus);
 
 router.put("/api/accounts", user.updateUser);
 

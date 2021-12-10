@@ -21,6 +21,9 @@ module.exports = (sequelize, DataTypes) => {
 			imageUrl: {
 				type: DataTypes.STRING,
 			},
+			imageFileName: {
+				type: DataTypes.STRING,
+			},
 		},
 		{
 			sequelize,

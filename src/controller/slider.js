@@ -42,7 +42,7 @@ module.exports = {
 				title: req.body.title,
 				description: req.body.description,
 				url: req.body.url,
-				isActive: req.body.isActive,
+				isDeleted: req.body.isDeleted,
 				hasButton: req.body.hasButton,
 				buttonText: req.body.buttonText,
 			});
@@ -69,7 +69,7 @@ module.exports = {
 					title: req.body.title,
 					description: req.body.description,
 					url: req.body.url,
-					isActive: req.body.isActive,
+					isDeleted: req.body.isDeleted,
 					hasButton: req.body.hasButton,
 					buttonText: req.body.buttonText,
 				},
